@@ -6,7 +6,8 @@ import Link from "next/link";
 import React from "react";
 
 const name = "Three Life";
-export const siteTitle = "Next.js Sample Website";
+export const siteTitle = `${name}'s blogging system`;
+export const ogImageTitle = "Blog system built by Next.js";
 
 export default function Layout({
   children,
@@ -21,12 +22,12 @@ export default function Layout({
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content="Learn how to build a personal website using Next.js"
+          content="基于next.js搭建的博客系统，使用github pages和gitHub actions进行部署"
         />
         <meta
           property="og:image"
           content={`https://og-image.vercel.app/${encodeURI(
-            siteTitle
+            ogImageTitle
           )}.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg`}
         />
         <meta name="og:title" content={siteTitle} />
@@ -37,7 +38,7 @@ export default function Layout({
           <>
             <Image
               priority
-              src="/images/profile.jpg"
+              src="/images/profile_picture.jpg"
               className={utilStyles.borderCircle}
               height={144}
               width={144}
