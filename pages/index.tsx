@@ -32,7 +32,7 @@ export default function Home({
       <section className={utilStyles.headingMd}>
         <p>
           [Although I have five years of front-end development experience, I am
-          still a rookie]
+          still a rookie 😊]
         </p>
         <p>
           (This is a blogging system written according to the official Next.js
