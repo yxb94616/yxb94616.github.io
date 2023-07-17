@@ -1,0 +1,209 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><link rel="icon" href="/favicon.ico"/><meta name="description" content="基于next.js搭建的博客系统，使用github pages和gitHub actions进行部署"/><meta property="og:image" content="https://og-image.vercel.app/Blog%20system%20built%20by%20Next.js.png?theme=light&amp;md=0&amp;fontSize=75px&amp;images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg"/><meta name="og:title" content="Three Life&#x27;s blogging system"/><meta name="twitter:card" content="summary_large_image"/><link rel="preload" as="image" href="/images/profile.jpg"/><title>Use pnpm to build a monorepo project</title><meta name="next-head-count" content="9"/><link rel="preload" href="/_next/static/css/0275f6d90e7ad339.css" as="style"/><link rel="stylesheet" href="/_next/static/css/0275f6d90e7ad339.css" data-n-g=""/><link rel="preload" href="/_next/static/css/c39f9723b4064ac0.css" as="style"/><link rel="stylesheet" href="/_next/static/css/c39f9723b4064ac0.css" data-n-p=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-7ee66019f7f6d30f.js" defer=""></script><script src="/_next/static/chunks/framework-0c60727b75b88c05.js" defer=""></script><script src="/_next/static/chunks/main-94d2b1ee1021a126.js" defer=""></script><script src="/_next/static/chunks/pages/_app-a1d1ed1f972287fd.js" defer=""></script><script src="/_next/static/chunks/562-b4e559111a58ff41.js" defer=""></script><script src="/_next/static/chunks/pages/posts/%5Bid%5D-dcd1d88a30994957.js" defer=""></script><script src="/_next/static/2JG6mlIUNmPBlo9NKBYU6/_buildManifest.js" defer=""></script><script src="/_next/static/2JG6mlIUNmPBlo9NKBYU6/_ssgManifest.js" defer=""></script></head><body><div id="__next" data-reactroot=""><div class="layout_container__fbLkO"><header class="layout_header__kY0Lt"><a href="/"><span style="box-sizing:border-box;display:inline-block;overflow:hidden;width:initial;height:initial;background:none;opacity:1;border:0;margin:0;padding:0;position:relative;max-width:100%"><span style="box-sizing:border-box;display:block;width:initial;height:initial;background:none;opacity:1;border:0;margin:0;padding:0;max-width:100%"><img style="display:block;max-width:100%;width:initial;height:initial;background:none;opacity:1;border:0;margin:0;padding:0" alt="" aria-hidden="true" src="data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27108%27%20height=%27108%27/%3e"/></span><img alt="Three Life" src="/images/profile.jpg" decoding="async" data-nimg="intrinsic" class="utils_borderCircle__s2nTm" style="position:absolute;top:0;left:0;bottom:0;right:0;box-sizing:border-box;padding:0;border:none;margin:auto;display:block;width:0;height:0;min-width:100%;max-width:100%;min-height:100%;max-height:100%"/></span></a><h2 class="utils_headingLg__5535D"><a class="utils_colorInherit__mSH_x" href="/">Three Life</a></h2></header><main><article><h1 class="utils_headingXl__u25Y2">Use pnpm to build a monorepo project</h1><div class="utils_lightText__eUzGY"><time dateTime="2022-07-20">July 20, 2022</time></div><div><p><code>pnpm</code> 是什么：</p>
+<blockquote>
+<p>Fast, disk space efficient package manager.</p>
+<p>速度快、节省磁盘空间的软件包管理器</p>
+</blockquote>
+<p><code>monorepo</code> 是什么：</p>
+<blockquote>
+<p>A monorepo is a single repository containing multiple distinct projects, with well-defined relationships.</p>
+<p>monorepo 是包含多个不同项目的单个存储库，具有明确定义的关系。</p>
+</blockquote>
+<p>为什么需要 <code>monorepo</code> ：</p>
+<blockquote>
+<p>当你需要同时维护多个技术栈类似的项目，而这些项目之间互相依赖的时候，使用 <code>monorepo</code> 会有很多好处，比如：</p>
+</blockquote>
+<ul>
+<li>项目基础设施可以统一管理，比如 <code>eslint</code>、<code>prettier</code>、<code>tsconfig</code>等</li>
+<li>项目中抽离的公共代码库，在互相依赖的时候可以很方便的进行依赖管理和调试，比如 <code>utils</code>、<code>api</code>、<code>ui</code>等</li>
+<li>以及使用 <code>npm</code>、<code>yarn</code>、<code>pnpm</code> 等包管理器可以方便的进行第三方依赖的统一管理，达到节省安装空间，提升安装速度等目的</li>
+</ul>
+<p><code>本文章只是记录项目搭建过程，并不做概念和原理的解释</code></p>
+<p>如果你对本文章感兴趣，又对标题中的 <code>pnpm</code> 和 <code>monorepo</code> 都不了解，可以在以下地址了解一下相关知识：</p>
+<ul>
+<li><a href="https://pnpm.io/zh/">pnpm</a></li>
+<li><a href="https://monorepo.tools">monorepo</a></li>
+</ul>
+<h2>准备工作</h2>
+<p>安装 <code>pnpm</code> , <code>node</code> 版本最好是在 <code>16v</code> 及以上</p>
+<pre><code>npm install -g pnpm
+</code></pre>
+<p>创建一个项目文件夹</p>
+<pre><code>mkdir monorepoo-project
+cd monorepo-project
+</code></pre>
+<p>在项目中新建若干文件夹，搭建项目结构：</p>
+<pre><code>.
+├─apps  # 应用代码目录
+│  ├─admin  # 管理平台应用
+│  └─portal # 门户网站应用
+└─packages # 公共库
+    ├─api # api管理
+    ├─tsconfig # tsconfig配置
+    ├─ui # 公共组件
+    └─utils # 公共方法
+</code></pre>
+<p>在项目根目录新建文件 <code>pnpm-workspace.yaml</code>，写入如下代码：</p>
+<pre><code># pnpm-workspace.yaml
+
+packages:
+  - "packages/*"
+  - "apps/*"
+</code></pre>
+<p>然后进行一些初始化工作，在下面根目录初始化生成 <code>package.json</code></p>
+<pre><code>pnpm init
+</code></pre>
+<p>修改生成的 <code>package.json</code></p>
+<pre><code>// package.json
+{
+  "name": "monorepo-project",
+  "version": "1.0.0",
+  "scripts": {},
+  "devDependencies": {}
+}
+</code></pre>
+<p>基础的项目目录结构以及准备工作就完成了，接下来进行编码工作，去体验一下 <code>monorepo</code></p>
+<h2>编写 demo 代码</h2>
+<h3>编写 <code>utils</code> demo</h3>
+<p>在 <code>packages/utils</code> 初始化一下应用</p>
+<pre><code>cd ./packages/utils
+pnpm init
+</code></pre>
+<p>修改 <code>packages/utils</code> 下生成的 <code>package.json</code></p>
+<pre><code>// packages/utils/package.json
+{
+  "name": "utils",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "module": "./index.ts"
+}
+</code></pre>
+<p>然后再新建一个文件 <code>index.ts</code>，写入一个测试方法</p>
+<pre><code>function hello(msg = "world") {
+  return `hello ${msg}!`;
+}
+
+export { hello };
+</code></pre>
+<h3>编写 <code>portal</code> demo</h3>
+<p>这里使用 <code>vite</code> + <code>react</code> 技术栈，在 <code>apps/portal</code> 里初始化一下应用</p>
+<p>在 <code>apps/portal</code> 初始化一下应用</p>
+<pre><code>cd ./apps/portal
+pnpm create vite
+</code></pre>
+<p>如果在一个已经存在的文件夹下初始化 <code>vite</code> 应用，可以在 <code>Project name</code> 的时候输入 <code>.</code> ，这样就以已存在的文件夹作为应用目录</p>
+<p>将 <code>apps/portal</code> 生成的 <code>package.json</code> 里的依赖配置剪切到根目录下的 <code>package.json</code></p>
+<pre><code>// apps/portal/package.json
+{
+  "name": "portal",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc &#x26;&#x26; vite build",
+    "preview": "vite preview"
+  }
+}
+</code></pre>
+<pre><code>// package.json
+{
+  "name": "monorepo-project",
+  "version": "1.0.0",
+  "scripts": {},
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0"
+  }
+}
+</code></pre>
+<p>然后安装一下依赖，这里安装在根目录的依赖是整个项目都可以直接使用的</p>
+<pre><code>pnpm install
+</code></pre>
+<blockquote>
+<p>如果要安装依赖到根目录，使用 <code>-w</code> 参数，比如：</p>
+</blockquote>
+<pre><code>pnpm add axios -w
+</code></pre>
+<blockquote>
+<p>如果要在指定的应用中安装依赖，使用 <code>--filter</code> 参数，比如：</p>
+</blockquote>
+<pre><code>pnpm --filter api add axios
+</code></pre>
+<blockquote>
+<p><code>--filter</code> 也可以指定在具体应用下执行脚本命令，比如：</p>
+</blockquote>
+<p>启动 <code>portal</code> 应用</p>
+<pre><code>pnpm --filter portal dev
+</code></pre>
+<p>访问输出的 <code>Local Server</code> 地址 <a href="http://127.0.0.1:5173">http://127.0.0.1:5173</a>，如下图</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/833c3a406f294cf98add34f2df1c608c~tplv-k3u1fbpfcp-watermark.image?" alt="1658217760878.jpg"></p>
+<p>接下来把刚才写的 <code>utils</code> 添加到 <code>portal</code> 中</p>
+<pre><code>// apps/portal/package.json
+{
+  "name": "portal",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc &#x26;&#x26; vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "utils": "workspace:*"
+  }
+}
+</code></pre>
+<p>这里的 <code>"utils": "workspace:*"</code> 是手动添加的，因为 <code>npm</code> 上是存在 <code>utils</code> 这个库的，
+版本号写成 <code>workspace:*</code>，<code>workspace</code> 代表的是工作空间，这个在 <a href="https://pnpm.io/zh/">pnpm</a> 里有介绍，
+<code>*</code> 是代表使用最新版本版本，不过在本项目中也不存在依赖库版本变更问题。</p>
+<p>然后在项目根目录下执行依赖安装</p>
+<pre><code>pnpm install
+</code></pre>
+<p>在 <code>portal</code> 中引入 <code>utils</code>，并使用我们编写的测试方法</p>
+<pre><code>// apps/portal/src/App.tsx
++ import { hello } from "utils";
++ &#x3C;h1>Vite + React + {hello()}&#x3C;/h1>
+</code></pre>
+<p>然后重新启动一下 <code>portal</code> 应用</p>
+<pre><code>pnpm --filter portal dev
+</code></pre>
+<p>再访问输出的 <code>Local Server</code> 地址 <a href="http://127.0.0.1:5173">http://127.0.0.1:5173</a>，如下图
+<img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0a02de05d5934c3ea7d9380dcfad91c2~tplv-k3u1fbpfcp-watermark.image?" alt="1658217790226.jpg"></p>
+<h3>编写 <code>admin</code> demo</h3>
+<p>按照 <code>portal</code> 应用的创建方式，创建一下 <code>admin</code> 应用，也引入 <code>utils</code> 进行测试， 然后启动 <code>admin</code>
+<img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ae9eeed5d0eb4ad78b33bddc5f93b6bf~tplv-k3u1fbpfcp-watermark.image?" alt="1658218443080.jpg"></p>
+<p>在 <code>admin</code> 中引入 <code>utils</code>，并使用我们编写的测试方法</p>
+<pre><code>// apps/admin/src/App.tsx
++ import { hello } from "utils";
++ &#x3C;h1>Vite + React + {hello("monorepo")}&#x3C;/h1>
+</code></pre>
+<p>然后改一下 <code>utils</code> 提供的方法 <code>hello</code> 输出，再看一下 <code>portal</code> 和 <code>admin</code></p>
+<pre><code>// packages/utils/index.ts
++ return `hello ${msg}! 代码不止，掘金不停。`;
+</code></pre>
+<p>可以看到 <code>portal</code> 和 <code>admin</code> 不需要重启，<code>utils</code> 的修改就已经生效了，而且 <code>utils</code> 也不需要打包就可以引入使用</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/25c65666621548b388d93802522658ae~tplv-k3u1fbpfcp-watermark.image?" alt="1658218890077.jpg">
+<img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00609c15ed224f47bac578832aac4b72~tplv-k3u1fbpfcp-watermark.image?" alt="1658218890065.jpg"></p>
+<h2>应用打包</h2>
+<p>然后我们再测试一下 <code>build</code>，然后使用 <code>vite</code> 提供的 <code>preview</code> 预览一下打包应用，运行以下命令</p>
+<pre><code># 打包
+pnpm --filter portal build
+# 预览
+pnpm --filter portal preview
+</code></pre>
+<p>通过 <code>preview</code> 命令输出的 <code>Local Server</code> 地址进行访问，正常会看到</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/595f9147c2474cc29940a31b2af92421~tplv-k3u1fbpfcp-watermark.image?" alt="1658219084249.jpg"></p>
+<p>最后，再按照上面的流程，编写一下 <code>ui</code> 和 <code>api</code> 的 demo 代码，
+并应用到 <code>portal</code> 和 <code>admin</code> 中去。这部分代码我放到了github，
+可以参考这个 <a href="https://github.com/yxb94616/monorepo-project/pull/1">PR</a></p>
+<pre><code>第一次在掘金发表文章，如果有什么地方写得不对的，或者不清楚的，请多多指教~👌
+</code></pre>
+</div></article></main><div class="layout_backToHome__9sjx_"><a href="/">← Back to home</a></div></div></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"postData":{"id":"pnpm-monorepo","contentHtml":"\u003cp\u003e\u003ccode\u003epnpm\u003c/code\u003e 是什么：\u003c/p\u003e\n\u003cblockquote\u003e\n\u003cp\u003eFast, disk space efficient package manager.\u003c/p\u003e\n\u003cp\u003e速度快、节省磁盘空间的软件包管理器\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cp\u003e\u003ccode\u003emonorepo\u003c/code\u003e 是什么：\u003c/p\u003e\n\u003cblockquote\u003e\n\u003cp\u003eA monorepo is a single repository containing multiple distinct projects, with well-defined relationships.\u003c/p\u003e\n\u003cp\u003emonorepo 是包含多个不同项目的单个存储库，具有明确定义的关系。\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cp\u003e为什么需要 \u003ccode\u003emonorepo\u003c/code\u003e ：\u003c/p\u003e\n\u003cblockquote\u003e\n\u003cp\u003e当你需要同时维护多个技术栈类似的项目，而这些项目之间互相依赖的时候，使用 \u003ccode\u003emonorepo\u003c/code\u003e 会有很多好处，比如：\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cul\u003e\n\u003cli\u003e项目基础设施可以统一管理，比如 \u003ccode\u003eeslint\u003c/code\u003e、\u003ccode\u003eprettier\u003c/code\u003e、\u003ccode\u003etsconfig\u003c/code\u003e等\u003c/li\u003e\n\u003cli\u003e项目中抽离的公共代码库，在互相依赖的时候可以很方便的进行依赖管理和调试，比如 \u003ccode\u003eutils\u003c/code\u003e、\u003ccode\u003eapi\u003c/code\u003e、\u003ccode\u003eui\u003c/code\u003e等\u003c/li\u003e\n\u003cli\u003e以及使用 \u003ccode\u003enpm\u003c/code\u003e、\u003ccode\u003eyarn\u003c/code\u003e、\u003ccode\u003epnpm\u003c/code\u003e 等包管理器可以方便的进行第三方依赖的统一管理，达到节省安装空间，提升安装速度等目的\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003e\u003ccode\u003e本文章只是记录项目搭建过程，并不做概念和原理的解释\u003c/code\u003e\u003c/p\u003e\n\u003cp\u003e如果你对本文章感兴趣，又对标题中的 \u003ccode\u003epnpm\u003c/code\u003e 和 \u003ccode\u003emonorepo\u003c/code\u003e 都不了解，可以在以下地址了解一下相关知识：\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ca href=\"https://pnpm.io/zh/\"\u003epnpm\u003c/a\u003e\u003c/li\u003e\n\u003cli\u003e\u003ca href=\"https://monorepo.tools\"\u003emonorepo\u003c/a\u003e\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch2\u003e准备工作\u003c/h2\u003e\n\u003cp\u003e安装 \u003ccode\u003epnpm\u003c/code\u003e , \u003ccode\u003enode\u003c/code\u003e 版本最好是在 \u003ccode\u003e16v\u003c/code\u003e 及以上\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003enpm install -g pnpm\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e创建一个项目文件夹\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003emkdir monorepoo-project\ncd monorepo-project\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e在项目中新建若干文件夹，搭建项目结构：\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e.\n├─apps  # 应用代码目录\n│  ├─admin  # 管理平台应用\n│  └─portal # 门户网站应用\n└─packages # 公共库\n    ├─api # api管理\n    ├─tsconfig # tsconfig配置\n    ├─ui # 公共组件\n    └─utils # 公共方法\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e在项目根目录新建文件 \u003ccode\u003epnpm-workspace.yaml\u003c/code\u003e，写入如下代码：\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e# pnpm-workspace.yaml\n\npackages:\n  - \"packages/*\"\n  - \"apps/*\"\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e然后进行一些初始化工作，在下面根目录初始化生成 \u003ccode\u003epackage.json\u003c/code\u003e\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003epnpm init\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e修改生成的 \u003ccode\u003epackage.json\u003c/code\u003e\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// package.json\n{\n  \"name\": \"monorepo-project\",\n  \"version\": \"1.0.0\",\n  \"scripts\": {},\n  \"devDependencies\": {}\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e基础的项目目录结构以及准备工作就完成了，接下来进行编码工作，去体验一下 \u003ccode\u003emonorepo\u003c/code\u003e\u003c/p\u003e\n\u003ch2\u003e编写 demo 代码\u003c/h2\u003e\n\u003ch3\u003e编写 \u003ccode\u003eutils\u003c/code\u003e demo\u003c/h3\u003e\n\u003cp\u003e在 \u003ccode\u003epackages/utils\u003c/code\u003e 初始化一下应用\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003ecd ./packages/utils\npnpm init\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e修改 \u003ccode\u003epackages/utils\u003c/code\u003e 下生成的 \u003ccode\u003epackage.json\u003c/code\u003e\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// packages/utils/package.json\n{\n  \"name\": \"utils\",\n  \"version\": \"0.0.0\",\n  \"main\": \"./index.ts\",\n  \"module\": \"./index.ts\"\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e然后再新建一个文件 \u003ccode\u003eindex.ts\u003c/code\u003e，写入一个测试方法\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003efunction hello(msg = \"world\") {\n  return `hello ${msg}!`;\n}\n\nexport { hello };\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e编写 \u003ccode\u003eportal\u003c/code\u003e demo\u003c/h3\u003e\n\u003cp\u003e这里使用 \u003ccode\u003evite\u003c/code\u003e + \u003ccode\u003ereact\u003c/code\u003e 技术栈，在 \u003ccode\u003eapps/portal\u003c/code\u003e 里初始化一下应用\u003c/p\u003e\n\u003cp\u003e在 \u003ccode\u003eapps/portal\u003c/code\u003e 初始化一下应用\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003ecd ./apps/portal\npnpm create vite\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e如果在一个已经存在的文件夹下初始化 \u003ccode\u003evite\u003c/code\u003e 应用，可以在 \u003ccode\u003eProject name\u003c/code\u003e 的时候输入 \u003ccode\u003e.\u003c/code\u003e ，这样就以已存在的文件夹作为应用目录\u003c/p\u003e\n\u003cp\u003e将 \u003ccode\u003eapps/portal\u003c/code\u003e 生成的 \u003ccode\u003epackage.json\u003c/code\u003e 里的依赖配置剪切到根目录下的 \u003ccode\u003epackage.json\u003c/code\u003e\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// apps/portal/package.json\n{\n  \"name\": \"portal\",\n  \"private\": true,\n  \"version\": \"0.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"tsc \u0026#x26;\u0026#x26; vite build\",\n    \"preview\": \"vite preview\"\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cpre\u003e\u003ccode\u003e// package.json\n{\n  \"name\": \"monorepo-project\",\n  \"version\": \"1.0.0\",\n  \"scripts\": {},\n  \"dependencies\": {\n    \"react\": \"^18.2.0\",\n    \"react-dom\": \"^18.2.0\"\n  },\n  \"devDependencies\": {\n    \"@types/react\": \"^18.0.15\",\n    \"@types/react-dom\": \"^18.0.6\",\n    \"@vitejs/plugin-react\": \"^2.0.0\",\n    \"typescript\": \"^4.6.4\",\n    \"vite\": \"^3.0.0\"\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e然后安装一下依赖，这里安装在根目录的依赖是整个项目都可以直接使用的\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003epnpm install\n\u003c/code\u003e\u003c/pre\u003e\n\u003cblockquote\u003e\n\u003cp\u003e如果要安装依赖到根目录，使用 \u003ccode\u003e-w\u003c/code\u003e 参数，比如：\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cpre\u003e\u003ccode\u003epnpm add axios -w\n\u003c/code\u003e\u003c/pre\u003e\n\u003cblockquote\u003e\n\u003cp\u003e如果要在指定的应用中安装依赖，使用 \u003ccode\u003e--filter\u003c/code\u003e 参数，比如：\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cpre\u003e\u003ccode\u003epnpm --filter api add axios\n\u003c/code\u003e\u003c/pre\u003e\n\u003cblockquote\u003e\n\u003cp\u003e\u003ccode\u003e--filter\u003c/code\u003e 也可以指定在具体应用下执行脚本命令，比如：\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cp\u003e启动 \u003ccode\u003eportal\u003c/code\u003e 应用\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003epnpm --filter portal dev\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e访问输出的 \u003ccode\u003eLocal Server\u003c/code\u003e 地址 \u003ca href=\"http://127.0.0.1:5173\"\u003ehttp://127.0.0.1:5173\u003c/a\u003e，如下图\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/833c3a406f294cf98add34f2df1c608c~tplv-k3u1fbpfcp-watermark.image?\" alt=\"1658217760878.jpg\"\u003e\u003c/p\u003e\n\u003cp\u003e接下来把刚才写的 \u003ccode\u003eutils\u003c/code\u003e 添加到 \u003ccode\u003eportal\u003c/code\u003e 中\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// apps/portal/package.json\n{\n  \"name\": \"portal\",\n  \"private\": true,\n  \"version\": \"0.0.0\",\n  \"type\": \"module\",\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"tsc \u0026#x26;\u0026#x26; vite build\",\n    \"preview\": \"vite preview\"\n  },\n  \"dependencies\": {\n    \"utils\": \"workspace:*\"\n  }\n}\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e这里的 \u003ccode\u003e\"utils\": \"workspace:*\"\u003c/code\u003e 是手动添加的，因为 \u003ccode\u003enpm\u003c/code\u003e 上是存在 \u003ccode\u003eutils\u003c/code\u003e 这个库的，\n版本号写成 \u003ccode\u003eworkspace:*\u003c/code\u003e，\u003ccode\u003eworkspace\u003c/code\u003e 代表的是工作空间，这个在 \u003ca href=\"https://pnpm.io/zh/\"\u003epnpm\u003c/a\u003e 里有介绍，\n\u003ccode\u003e*\u003c/code\u003e 是代表使用最新版本版本，不过在本项目中也不存在依赖库版本变更问题。\u003c/p\u003e\n\u003cp\u003e然后在项目根目录下执行依赖安装\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003epnpm install\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e在 \u003ccode\u003eportal\u003c/code\u003e 中引入 \u003ccode\u003eutils\u003c/code\u003e，并使用我们编写的测试方法\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// apps/portal/src/App.tsx\n+ import { hello } from \"utils\";\n+ \u0026#x3C;h1\u003eVite + React + {hello()}\u0026#x3C;/h1\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e然后重新启动一下 \u003ccode\u003eportal\u003c/code\u003e 应用\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003epnpm --filter portal dev\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e再访问输出的 \u003ccode\u003eLocal Server\u003c/code\u003e 地址 \u003ca href=\"http://127.0.0.1:5173\"\u003ehttp://127.0.0.1:5173\u003c/a\u003e，如下图\n\u003cimg src=\"https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0a02de05d5934c3ea7d9380dcfad91c2~tplv-k3u1fbpfcp-watermark.image?\" alt=\"1658217790226.jpg\"\u003e\u003c/p\u003e\n\u003ch3\u003e编写 \u003ccode\u003eadmin\u003c/code\u003e demo\u003c/h3\u003e\n\u003cp\u003e按照 \u003ccode\u003eportal\u003c/code\u003e 应用的创建方式，创建一下 \u003ccode\u003eadmin\u003c/code\u003e 应用，也引入 \u003ccode\u003eutils\u003c/code\u003e 进行测试， 然后启动 \u003ccode\u003eadmin\u003c/code\u003e\n\u003cimg src=\"https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ae9eeed5d0eb4ad78b33bddc5f93b6bf~tplv-k3u1fbpfcp-watermark.image?\" alt=\"1658218443080.jpg\"\u003e\u003c/p\u003e\n\u003cp\u003e在 \u003ccode\u003eadmin\u003c/code\u003e 中引入 \u003ccode\u003eutils\u003c/code\u003e，并使用我们编写的测试方法\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// apps/admin/src/App.tsx\n+ import { hello } from \"utils\";\n+ \u0026#x3C;h1\u003eVite + React + {hello(\"monorepo\")}\u0026#x3C;/h1\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e然后改一下 \u003ccode\u003eutils\u003c/code\u003e 提供的方法 \u003ccode\u003ehello\u003c/code\u003e 输出，再看一下 \u003ccode\u003eportal\u003c/code\u003e 和 \u003ccode\u003eadmin\u003c/code\u003e\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e// packages/utils/index.ts\n+ return `hello ${msg}! 代码不止，掘金不停。`;\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e可以看到 \u003ccode\u003eportal\u003c/code\u003e 和 \u003ccode\u003eadmin\u003c/code\u003e 不需要重启，\u003ccode\u003eutils\u003c/code\u003e 的修改就已经生效了，而且 \u003ccode\u003eutils\u003c/code\u003e 也不需要打包就可以引入使用\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/25c65666621548b388d93802522658ae~tplv-k3u1fbpfcp-watermark.image?\" alt=\"1658218890077.jpg\"\u003e\n\u003cimg src=\"https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/00609c15ed224f47bac578832aac4b72~tplv-k3u1fbpfcp-watermark.image?\" alt=\"1658218890065.jpg\"\u003e\u003c/p\u003e\n\u003ch2\u003e应用打包\u003c/h2\u003e\n\u003cp\u003e然后我们再测试一下 \u003ccode\u003ebuild\u003c/code\u003e，然后使用 \u003ccode\u003evite\u003c/code\u003e 提供的 \u003ccode\u003epreview\u003c/code\u003e 预览一下打包应用，运行以下命令\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e# 打包\npnpm --filter portal build\n# 预览\npnpm --filter portal preview\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e通过 \u003ccode\u003epreview\u003c/code\u003e 命令输出的 \u003ccode\u003eLocal Server\u003c/code\u003e 地址进行访问，正常会看到\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/595f9147c2474cc29940a31b2af92421~tplv-k3u1fbpfcp-watermark.image?\" alt=\"1658219084249.jpg\"\u003e\u003c/p\u003e\n\u003cp\u003e最后，再按照上面的流程，编写一下 \u003ccode\u003eui\u003c/code\u003e 和 \u003ccode\u003eapi\u003c/code\u003e 的 demo 代码，\n并应用到 \u003ccode\u003eportal\u003c/code\u003e 和 \u003ccode\u003eadmin\u003c/code\u003e 中去。这部分代码我放到了github，\n可以参考这个 \u003ca href=\"https://github.com/yxb94616/monorepo-project/pull/1\"\u003ePR\u003c/a\u003e\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e第一次在掘金发表文章，如果有什么地方写得不对的，或者不清楚的，请多多指教~👌\n\u003c/code\u003e\u003c/pre\u003e\n","title":"Use pnpm to build a monorepo project","date":"2022-07-20"}},"__N_SSG":true},"page":"/posts/[id]","query":{"id":"pnpm-monorepo"},"buildId":"2JG6mlIUNmPBlo9NKBYU6","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>

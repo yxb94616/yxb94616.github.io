@@ -1,0 +1,234 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><link rel="icon" href="/favicon.ico"/><meta name="description" content="基于next.js搭建的博客系统，使用github pages和gitHub actions进行部署"/><meta property="og:image" content="https://og-image.vercel.app/Blog%20system%20built%20by%20Next.js.png?theme=light&amp;md=0&amp;fontSize=75px&amp;images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg"/><meta name="og:title" content="Three Life&#x27;s blogging system"/><meta name="twitter:card" content="summary_large_image"/><link rel="preload" as="image" href="/images/profile.jpg"/><title>Nuxt3+Tailwindcss implements dark mode switching</title><meta name="next-head-count" content="9"/><link rel="preload" href="/_next/static/css/0275f6d90e7ad339.css" as="style"/><link rel="stylesheet" href="/_next/static/css/0275f6d90e7ad339.css" data-n-g=""/><link rel="preload" href="/_next/static/css/c39f9723b4064ac0.css" as="style"/><link rel="stylesheet" href="/_next/static/css/c39f9723b4064ac0.css" data-n-p=""/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js"></script><script src="/_next/static/chunks/webpack-7ee66019f7f6d30f.js" defer=""></script><script src="/_next/static/chunks/framework-0c60727b75b88c05.js" defer=""></script><script src="/_next/static/chunks/main-94d2b1ee1021a126.js" defer=""></script><script src="/_next/static/chunks/pages/_app-a1d1ed1f972287fd.js" defer=""></script><script src="/_next/static/chunks/562-b4e559111a58ff41.js" defer=""></script><script src="/_next/static/chunks/pages/posts/%5Bid%5D-dcd1d88a30994957.js" defer=""></script><script src="/_next/static/2JG6mlIUNmPBlo9NKBYU6/_buildManifest.js" defer=""></script><script src="/_next/static/2JG6mlIUNmPBlo9NKBYU6/_ssgManifest.js" defer=""></script></head><body><div id="__next" data-reactroot=""><div class="layout_container__fbLkO"><header class="layout_header__kY0Lt"><a href="/"><span style="box-sizing:border-box;display:inline-block;overflow:hidden;width:initial;height:initial;background:none;opacity:1;border:0;margin:0;padding:0;position:relative;max-width:100%"><span style="box-sizing:border-box;display:block;width:initial;height:initial;background:none;opacity:1;border:0;margin:0;padding:0;max-width:100%"><img style="display:block;max-width:100%;width:initial;height:initial;background:none;opacity:1;border:0;margin:0;padding:0" alt="" aria-hidden="true" src="data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%27108%27%20height=%27108%27/%3e"/></span><img alt="Three Life" src="/images/profile.jpg" decoding="async" data-nimg="intrinsic" class="utils_borderCircle__s2nTm" style="position:absolute;top:0;left:0;bottom:0;right:0;box-sizing:border-box;padding:0;border:none;margin:auto;display:block;width:0;height:0;min-width:100%;max-width:100%;min-height:100%;max-height:100%"/></span></a><h2 class="utils_headingLg__5535D"><a class="utils_colorInherit__mSH_x" href="/">Three Life</a></h2></header><main><article><h1 class="utils_headingXl__u25Y2">Nuxt3+Tailwindcss implements dark mode switching</h1><div class="utils_lightText__eUzGY"><time dateTime="2023-05-24">May 24, 2023</time></div><div><p>最近掘金网站上线了深色模式，看 jym 都挺青睐深色模式，想着我之前也实现过深色模式的切换，不过是在使用 <code>VUE SPA</code> 做的网站上实现的，而掘金网站使用的是 <code>VUE SSR</code> 框架 <code>Nuxt</code>，我想着实现原理都是大同小异，那我们也使用 <code>Nuxt</code> 来实现一下深色模式的切换试试。</p>
+<h2>深色模式切换原理之一</h2>
+<p>为什么是原理之一，是因为实现深色模式有多种方式，我尝试的是通过 <code>css class</code> 切换来控制深色模式切换。
+大概是这么个原理：</p>
+<ul>
+<li>
+<p>定义两套样式：你需要为深色模式和浅色模式分别定义两套样式</p>
+</li>
+<li>
+<p>切换 CSS 类：通过 JS 动态地切换特定的 CSS 类</p>
+</li>
+<li>
+<p>CSS 样式优先级：确保在 CSS 中正确设置深色模式和浅色模式的样式优先级。为了确保样式正确应用，你可以使用合适的 CSS 选择器，例如使用 .dark 或 .light 类来选择对应的样式。</p>
+</li>
+<li>
+<p>存储用户选择：如果你希望记住用户的模式选择，可以使用浏览器的本地存储（如 localStorage）或其他方式将用户的偏好保存起来。这样，用户下次访问网页时，可以根据之前的选择自动应用正确的模式。</p>
+</li>
+</ul>
+<h2>项目搭建</h2>
+<p>这里我用的是 <code>Nuxt3+Tailwindcss</code> 来搭建的项目，用 <code>Tailwindcss</code> 是因为这个库可以帮助我方便的实现深色模式，而且我现在的项目基本都是集成了 <code>Tailwindcss</code> 的，十分推荐大家使用它，如果你不了解它的话，现在了解一下也不迟哦！</p>
+<ul>
+<li>
+<p>第一步，在 <a href="https://nuxt.com/docs/getting-started/installation">Nuxt 官网</a>，跟着文档三下五除二就新建好一个项目</p>
+</li>
+<li>
+<p>第二步，然后在跟着 <a href="https://tailwindcss.com/docs/guides/nuxtjs#3">Tailwindcss 官网</a>，三五步就能把 <code>Tailwindcss</code> 集成到 <code>Nuxt</code> 中</p>
+</li>
+<li>
+<p>第三步，我习惯于在前端项目安装了一些插件来做规范化限制，比如在这个项目用到了这些插件</p>
+<pre><code>"eslint": "^8.40.0",
+"eslint-config-prettier": "^8.8.0",
+"eslint-plugin-prettier": "^4.2.1",
+"eslint-plugin-vue": "^9.13.0",
+"prettier": "^2.8.8",
+"prettier-plugin-tailwindcss": "^0.2.8",
+</code></pre>
+</li>
+</ul>
+<p>我搭建完的项目在这里 <a href="https://github.com/yxb94616/nuxt-theme-demo/commit/ea71afb171f72215aba8bb383705038050d897db">Github Repo Commit</a></p>
+<h2>具体实现</h2>
+<h3>tailwind 深色模式配置</h3>
+<p>首先，在 <code>tailwind.config.js</code> 配置 <a href="https://tailwindcss.com/docs/dark-mode">Dark Mode</a>，然后自定义一个深色模式下的颜色 (我深色模式不想要纯黑色 😂)，配置后代码如下：</p>
+<pre><code>/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: "class",
+  content: [
+    "./components/**/*.{js,vue,ts}",
+    "./layouts/**/*.vue",
+    "./pages/**/*.vue",
+    "./plugins/**/*.{js,ts}",
+    "./nuxt.config.{js,ts}",
+    "./app.vue",
+  ],
+  theme: {
+    extend: {},
+    extend: {
+      colors: {
+        dark: "rgb(18,18,18)",
+      },
+    },
+  },
+  plugins: [],
+};
+</code></pre>
+<h3>新增深色模式切换组件</h3>
+<p>在根目录下新增 <code>components/ThemeToggle.vue</code> ，找两个图标分别代表深色和浅色模式，定义一个变量来控制图标在对应模式下的显隐，并且在切换模式的时候，往根标签 <code>&#x3C;html></code> 上增删 <code>class</code>，同时也在 <code>localstorage</code> 中存储一下深色模式变量，方便后边我们做网页刷新保持深色模式功能，代码如下</p>
+<pre><code>&#x3C;template>
+  &#x3C;div
+    class="absolute right-5 top-3 h-8 w-8 cursor-pointer select-none rounded bg-slate-100 text-gray-500 shadow dark:bg-slate-700 dark:text-gray-400"
+    @click="handleToggleTheme"
+  >
+    &#x3C;span v-show="!dark">
+      &#x3C;svg
+        t="1684833132212"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="8388"
+        width="32"
+        height="32"
+      >
+        &#x3C;path
+          d="M501.48 493.55m-233.03 0a233.03 233.03 0 1 0 466.06 0 233.03 233.03 0 1 0-466.06 0Z"
+          fill="#707070"
+          p-id="8389"
+        >&#x3C;/path>
+        &#x3C;path
+          d="M501.52 185.35H478.9c-8.28 0-15-6.72-15-15V87.59c0-8.28 6.72-15 15-15h22.62c8.28 0 15 6.72 15 15v82.76c0 8.28-6.72 15-15 15zM281.37 262.76l-16 16c-5.86 5.86-15.36 5.86-21.21 0l-58.52-58.52c-5.86-5.86-5.86-15.36 0-21.21l16-16c5.86-5.86 15.36-5.86 21.21 0l58.52 58.52c5.86 5.86 5.86 15.35 0 21.21zM185.76 478.48v22.62c0 8.28-6.72 15-15 15H88c-8.28 0-15-6.72-15-15v-22.62c0-8.28 6.72-15 15-15h82.76c8.28 0 15 6.72 15 15zM270.69 698.63l16 16c5.86 5.86 5.86 15.36 0 21.21l-58.52 58.52c-5.86 5.86-15.36 5.86-21.21 0l-16-16c-5.86-5.86-5.86-15.36 0-21.21l58.52-58.52c5.85-5.86 15.35-5.86 21.21 0zM486.41 794.24h22.62c8.28 0 15 6.72 15 15V892c0 8.28-6.72 15-15 15h-22.62c-8.28 0-15-6.72-15-15v-82.76c0-8.28 6.72-15 15-15zM706.56 709.31l16-16c5.86-5.86 15.36-5.86 21.21 0l58.52 58.52c5.86 5.86 5.86 15.36 0 21.21l-16 16c-5.86 5.86-15.36 5.86-21.21 0l-58.52-58.52c-5.86-5.85-5.86-15.35 0-21.21zM802.17 493.59v-22.62c0-8.28 6.72-15 15-15h82.76c8.28 0 15 6.72 15 15v22.62c0 8.28-6.72 15-15 15h-82.76c-8.28 0-15-6.72-15-15zM717.24 273.44l-16-16c-5.86-5.86-5.86-15.36 0-21.21l58.52-58.52c5.86-5.86 15.36-5.86 21.21 0l16 16c5.86 5.86 5.86 15.36 0 21.21l-58.52 58.52c-5.86 5.86-15.35 5.86-21.21 0z"
+          fill="#707070"
+          p-id="8390"
+        >&#x3C;/path>
+      &#x3C;/svg>
+    &#x3C;/span>
+    &#x3C;span v-show="dark">
+      &#x3C;svg
+        t="1684833077751"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="7162"
+        width="32"
+        height="32"
+      >
+        &#x3C;path
+          d="M335.22 240.91c0-57.08 10.68-111.66 30.15-161.87-167.51 64.86-286.3 227.51-286.3 417.92 0 247.42 200.58 448 448 448 190.34 0 352.95-118.71 417.85-286.13-50.16 19.42-104.69 30.08-161.71 30.08-247.41 0-447.99-200.57-447.99-448z"
+          fill="#dbdbdb"
+          p-id="7163"
+        >&#x3C;/path>
+      &#x3C;/svg>
+    &#x3C;/span>
+  &#x3C;/div>
+&#x3C;/template>
+
+&#x3C;script lang="ts" setup>
+const dark = ref(false);
+
+const handleToggleTheme = () => {
+  const currentTheme = !dark.value;
+  dark.value = currentTheme;
+  if (currentTheme) {
+    localStorage.setItem("theme", "dark");
+    document.documentElement.classList.add("dark");
+  } else {
+    localStorage.removeItem("theme");
+    document.documentElement.classList.remove("dark");
+  }
+};
+&#x3C;/script>
+</code></pre>
+<h3>添加测试代码</h3>
+<p>在 <code>pages/index.vue</code> 中添加测试代码，引入 <code>ThemeToggle</code> 组件，代码如下：</p>
+<pre><code>&#x3C;template>
+  &#x3C;div
+    class="dark:bg-dark flex h-screen w-screen flex-col items-center justify-center bg-white"
+  >
+    &#x3C;h1 class="text-6xl font-semibold text-sky-400">2023 ikun&#x3C;/h1>
+    &#x3C;p class="mt-4 text-9xl font-bold text-gray-600">只因你太美&#x3C;/p>
+    &#x3C;ThemeToggle />
+  &#x3C;/div>
+&#x3C;/template>
+</code></pre>
+<p>启动项目，访问网站就能看到如下效果</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/afda17b016b94f6c869b9ca63ead5b96~tplv-k3u1fbpfcp-watermark.image?" alt="n1.gif"></p>
+<h3>新增持久化深色模式功能</h3>
+<p>能看到已经实现深色模式切换了，但是在深色模式下刷新网站的时候，深色模式会丢失，
+上面提到在 <code>localstorage</code> 中存储了深色模式变量，那怎么去恢复深色模式呢，</p>
+<ul>
+<li>在 <code>components/ThemeToggle.vue</code> 的 <code>onMounted</code> 里获取 <code>localstorage</code> 做判断，如果是深色模式，那就做一下处理，在组件里新增下面这段代码：</li>
+</ul>
+<pre><code>onMounted(() => {
+  if (localStorage.getItem("theme") === "dark") {
+    dark.value = true;
+    document.documentElement.classList.add("dark");
+  }
+});
+</code></pre>
+<p>然后我们再去测试一下，深色模式下刷新网站，效果如图</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/42ec555012444f109344066fedce4826~tplv-k3u1fbpfcp-watermark.image?" alt="n2.gif"></p>
+<p>的确是持久化了深色模式，但是发现刷新网站的时候会闪一下，这是为什么呢？</p>
+<ul>
+<li>这是因为 nuxt 框架生成的 js 代码插入到了 DOM 文档的尾部，造成 js 执行晚了一步，所以获取 <code>localstorage</code> 就延迟了一点点，造成设置深色模式的时候会闪一下</li>
+</ul>
+<p>怎么解决呢？</p>
+<ul>
+<li>那就把获取 <code>localstorage</code> 的代码插入到 DOM 文档头部不就行了，而且如果没有设置 defer 或 async 属性， js 加载还会造成浏览器将阻塞渲染，更加的能防止闪烁出现</li>
+</ul>
+<h3>解决闪烁问题</h3>
+<ul>
+<li>
+<p><code>Nuxt</code> 提供了在 DOM 文档头部插入代码的方法，请阅读 <a href="https://nuxt.com/docs/api/configuration/nuxt-config#head">Nuxt Configuration Reference</a></p>
+</li>
+<li>
+<p>新建脚本文件 <code>public/script.js</code>，代码如下（这段代码来源是 <a href="https://tailwindcss.com/docs/dark-mode#supporting-system-preference-and-manual-selection">tailwindcss</a>）：</p>
+</li>
+</ul>
+<pre><code>if (
+  localStorage.getItem("theme") === "dark" ||
+  (!localStorage.getItem("theme") &#x26;&#x26;
+    window.matchMedia("(prefers-color-scheme: dark)").matches)
+) {
+  document.documentElement.classList.add("dark");
+} else {
+  document.documentElement.classList.remove("dark");
+}
+
+</code></pre>
+<ul>
+<li>然后在 <code>nuxt.config.js</code> 增加配置：</li>
+</ul>
+<pre><code>// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  app: {
+    head: {
+      script: ["/script.js"],
+    },
+  },
+  css: ["~/assets/css/main.css"],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+  devServer: {
+    port: 5005,
+  },
+});
+</code></pre>
+<ul>
+<li><code>components/ThemeToggle.vue</code> 的 <code>onMounted</code> 还是需要的，需要保持变量也同步，改一下</li>
+</ul>
+<pre><code>onMounted(() => {
+  if (localStorage.getItem("theme") === "dark") {
+    dark.value = true;
+  }
+});
+</code></pre>
+<ul>
+<li>这里还有一个小问题，就是图标也会跟着闪烁的，原因还是js执行顺序的问题，我的解决办法是改为使用 <code>css class</code> 来控制图标的显隐，修改 <code>components/ThemeToggle.vue</code> 代码如下：</li>
+</ul>
+<pre><code>- &#x3C;span v-show="!dark">
++ &#x3C;span class="block dark:hidden">
+
+- &#x3C;span v-show="dark">
++ &#x3C;span class="hidden dark:block">
+</code></pre>
+<p>ok，现在我们再来在深色模式下刷新网页，么得问题，达到了想要的效果。</p>
+<p>因为在正常效果下录制 GIF 的话，刷新也看不出来，所以这里就不放效果图了，最后的代码在上面我提到的 <a href="https://github.com/yxb94616/nuxt-theme-demo">github 仓库</a>。</p>
+<blockquote>
+<p>如有错误，欢迎指正</p>
+</blockquote>
+</div></article></main><div class="layout_backToHome__9sjx_"><a href="/">← Back to home</a></div></div></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"postData":{"id":"nuxt3-tailwindcss-dark","contentHtml":"\u003cp\u003e最近掘金网站上线了深色模式，看 jym 都挺青睐深色模式，想着我之前也实现过深色模式的切换，不过是在使用 \u003ccode\u003eVUE SPA\u003c/code\u003e 做的网站上实现的，而掘金网站使用的是 \u003ccode\u003eVUE SSR\u003c/code\u003e 框架 \u003ccode\u003eNuxt\u003c/code\u003e，我想着实现原理都是大同小异，那我们也使用 \u003ccode\u003eNuxt\u003c/code\u003e 来实现一下深色模式的切换试试。\u003c/p\u003e\n\u003ch2\u003e深色模式切换原理之一\u003c/h2\u003e\n\u003cp\u003e为什么是原理之一，是因为实现深色模式有多种方式，我尝试的是通过 \u003ccode\u003ecss class\u003c/code\u003e 切换来控制深色模式切换。\n大概是这么个原理：\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\n\u003cp\u003e定义两套样式：你需要为深色模式和浅色模式分别定义两套样式\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e切换 CSS 类：通过 JS 动态地切换特定的 CSS 类\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003eCSS 样式优先级：确保在 CSS 中正确设置深色模式和浅色模式的样式优先级。为了确保样式正确应用，你可以使用合适的 CSS 选择器，例如使用 .dark 或 .light 类来选择对应的样式。\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e存储用户选择：如果你希望记住用户的模式选择，可以使用浏览器的本地存储（如 localStorage）或其他方式将用户的偏好保存起来。这样，用户下次访问网页时，可以根据之前的选择自动应用正确的模式。\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch2\u003e项目搭建\u003c/h2\u003e\n\u003cp\u003e这里我用的是 \u003ccode\u003eNuxt3+Tailwindcss\u003c/code\u003e 来搭建的项目，用 \u003ccode\u003eTailwindcss\u003c/code\u003e 是因为这个库可以帮助我方便的实现深色模式，而且我现在的项目基本都是集成了 \u003ccode\u003eTailwindcss\u003c/code\u003e 的，十分推荐大家使用它，如果你不了解它的话，现在了解一下也不迟哦！\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\n\u003cp\u003e第一步，在 \u003ca href=\"https://nuxt.com/docs/getting-started/installation\"\u003eNuxt 官网\u003c/a\u003e，跟着文档三下五除二就新建好一个项目\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e第二步，然后在跟着 \u003ca href=\"https://tailwindcss.com/docs/guides/nuxtjs#3\"\u003eTailwindcss 官网\u003c/a\u003e，三五步就能把 \u003ccode\u003eTailwindcss\u003c/code\u003e 集成到 \u003ccode\u003eNuxt\u003c/code\u003e 中\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e第三步，我习惯于在前端项目安装了一些插件来做规范化限制，比如在这个项目用到了这些插件\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e\"eslint\": \"^8.40.0\",\n\"eslint-config-prettier\": \"^8.8.0\",\n\"eslint-plugin-prettier\": \"^4.2.1\",\n\"eslint-plugin-vue\": \"^9.13.0\",\n\"prettier\": \"^2.8.8\",\n\"prettier-plugin-tailwindcss\": \"^0.2.8\",\n\u003c/code\u003e\u003c/pre\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003e我搭建完的项目在这里 \u003ca href=\"https://github.com/yxb94616/nuxt-theme-demo/commit/ea71afb171f72215aba8bb383705038050d897db\"\u003eGithub Repo Commit\u003c/a\u003e\u003c/p\u003e\n\u003ch2\u003e具体实现\u003c/h2\u003e\n\u003ch3\u003etailwind 深色模式配置\u003c/h3\u003e\n\u003cp\u003e首先，在 \u003ccode\u003etailwind.config.js\u003c/code\u003e 配置 \u003ca href=\"https://tailwindcss.com/docs/dark-mode\"\u003eDark Mode\u003c/a\u003e，然后自定义一个深色模式下的颜色 (我深色模式不想要纯黑色 😂)，配置后代码如下：\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  darkMode: \"class\",\n  content: [\n    \"./components/**/*.{js,vue,ts}\",\n    \"./layouts/**/*.vue\",\n    \"./pages/**/*.vue\",\n    \"./plugins/**/*.{js,ts}\",\n    \"./nuxt.config.{js,ts}\",\n    \"./app.vue\",\n  ],\n  theme: {\n    extend: {},\n    extend: {\n      colors: {\n        dark: \"rgb(18,18,18)\",\n      },\n    },\n  },\n  plugins: [],\n};\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e新增深色模式切换组件\u003c/h3\u003e\n\u003cp\u003e在根目录下新增 \u003ccode\u003ecomponents/ThemeToggle.vue\u003c/code\u003e ，找两个图标分别代表深色和浅色模式，定义一个变量来控制图标在对应模式下的显隐，并且在切换模式的时候，往根标签 \u003ccode\u003e\u0026#x3C;html\u003e\u003c/code\u003e 上增删 \u003ccode\u003eclass\u003c/code\u003e，同时也在 \u003ccode\u003elocalstorage\u003c/code\u003e 中存储一下深色模式变量，方便后边我们做网页刷新保持深色模式功能，代码如下\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e\u0026#x3C;template\u003e\n  \u0026#x3C;div\n    class=\"absolute right-5 top-3 h-8 w-8 cursor-pointer select-none rounded bg-slate-100 text-gray-500 shadow dark:bg-slate-700 dark:text-gray-400\"\n    @click=\"handleToggleTheme\"\n  \u003e\n    \u0026#x3C;span v-show=\"!dark\"\u003e\n      \u0026#x3C;svg\n        t=\"1684833132212\"\n        class=\"icon\"\n        viewBox=\"0 0 1024 1024\"\n        version=\"1.1\"\n        xmlns=\"http://www.w3.org/2000/svg\"\n        p-id=\"8388\"\n        width=\"32\"\n        height=\"32\"\n      \u003e\n        \u0026#x3C;path\n          d=\"M501.48 493.55m-233.03 0a233.03 233.03 0 1 0 466.06 0 233.03 233.03 0 1 0-466.06 0Z\"\n          fill=\"#707070\"\n          p-id=\"8389\"\n        \u003e\u0026#x3C;/path\u003e\n        \u0026#x3C;path\n          d=\"M501.52 185.35H478.9c-8.28 0-15-6.72-15-15V87.59c0-8.28 6.72-15 15-15h22.62c8.28 0 15 6.72 15 15v82.76c0 8.28-6.72 15-15 15zM281.37 262.76l-16 16c-5.86 5.86-15.36 5.86-21.21 0l-58.52-58.52c-5.86-5.86-5.86-15.36 0-21.21l16-16c5.86-5.86 15.36-5.86 21.21 0l58.52 58.52c5.86 5.86 5.86 15.35 0 21.21zM185.76 478.48v22.62c0 8.28-6.72 15-15 15H88c-8.28 0-15-6.72-15-15v-22.62c0-8.28 6.72-15 15-15h82.76c8.28 0 15 6.72 15 15zM270.69 698.63l16 16c5.86 5.86 5.86 15.36 0 21.21l-58.52 58.52c-5.86 5.86-15.36 5.86-21.21 0l-16-16c-5.86-5.86-5.86-15.36 0-21.21l58.52-58.52c5.85-5.86 15.35-5.86 21.21 0zM486.41 794.24h22.62c8.28 0 15 6.72 15 15V892c0 8.28-6.72 15-15 15h-22.62c-8.28 0-15-6.72-15-15v-82.76c0-8.28 6.72-15 15-15zM706.56 709.31l16-16c5.86-5.86 15.36-5.86 21.21 0l58.52 58.52c5.86 5.86 5.86 15.36 0 21.21l-16 16c-5.86 5.86-15.36 5.86-21.21 0l-58.52-58.52c-5.86-5.85-5.86-15.35 0-21.21zM802.17 493.59v-22.62c0-8.28 6.72-15 15-15h82.76c8.28 0 15 6.72 15 15v22.62c0 8.28-6.72 15-15 15h-82.76c-8.28 0-15-6.72-15-15zM717.24 273.44l-16-16c-5.86-5.86-5.86-15.36 0-21.21l58.52-58.52c5.86-5.86 15.36-5.86 21.21 0l16 16c5.86 5.86 5.86 15.36 0 21.21l-58.52 58.52c-5.86 5.86-15.35 5.86-21.21 0z\"\n          fill=\"#707070\"\n          p-id=\"8390\"\n        \u003e\u0026#x3C;/path\u003e\n      \u0026#x3C;/svg\u003e\n    \u0026#x3C;/span\u003e\n    \u0026#x3C;span v-show=\"dark\"\u003e\n      \u0026#x3C;svg\n        t=\"1684833077751\"\n        class=\"icon\"\n        viewBox=\"0 0 1024 1024\"\n        version=\"1.1\"\n        xmlns=\"http://www.w3.org/2000/svg\"\n        p-id=\"7162\"\n        width=\"32\"\n        height=\"32\"\n      \u003e\n        \u0026#x3C;path\n          d=\"M335.22 240.91c0-57.08 10.68-111.66 30.15-161.87-167.51 64.86-286.3 227.51-286.3 417.92 0 247.42 200.58 448 448 448 190.34 0 352.95-118.71 417.85-286.13-50.16 19.42-104.69 30.08-161.71 30.08-247.41 0-447.99-200.57-447.99-448z\"\n          fill=\"#dbdbdb\"\n          p-id=\"7163\"\n        \u003e\u0026#x3C;/path\u003e\n      \u0026#x3C;/svg\u003e\n    \u0026#x3C;/span\u003e\n  \u0026#x3C;/div\u003e\n\u0026#x3C;/template\u003e\n\n\u0026#x3C;script lang=\"ts\" setup\u003e\nconst dark = ref(false);\n\nconst handleToggleTheme = () =\u003e {\n  const currentTheme = !dark.value;\n  dark.value = currentTheme;\n  if (currentTheme) {\n    localStorage.setItem(\"theme\", \"dark\");\n    document.documentElement.classList.add(\"dark\");\n  } else {\n    localStorage.removeItem(\"theme\");\n    document.documentElement.classList.remove(\"dark\");\n  }\n};\n\u0026#x3C;/script\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch3\u003e添加测试代码\u003c/h3\u003e\n\u003cp\u003e在 \u003ccode\u003epages/index.vue\u003c/code\u003e 中添加测试代码，引入 \u003ccode\u003eThemeToggle\u003c/code\u003e 组件，代码如下：\u003c/p\u003e\n\u003cpre\u003e\u003ccode\u003e\u0026#x3C;template\u003e\n  \u0026#x3C;div\n    class=\"dark:bg-dark flex h-screen w-screen flex-col items-center justify-center bg-white\"\n  \u003e\n    \u0026#x3C;h1 class=\"text-6xl font-semibold text-sky-400\"\u003e2023 ikun\u0026#x3C;/h1\u003e\n    \u0026#x3C;p class=\"mt-4 text-9xl font-bold text-gray-600\"\u003e只因你太美\u0026#x3C;/p\u003e\n    \u0026#x3C;ThemeToggle /\u003e\n  \u0026#x3C;/div\u003e\n\u0026#x3C;/template\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e启动项目，访问网站就能看到如下效果\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/afda17b016b94f6c869b9ca63ead5b96~tplv-k3u1fbpfcp-watermark.image?\" alt=\"n1.gif\"\u003e\u003c/p\u003e\n\u003ch3\u003e新增持久化深色模式功能\u003c/h3\u003e\n\u003cp\u003e能看到已经实现深色模式切换了，但是在深色模式下刷新网站的时候，深色模式会丢失，\n上面提到在 \u003ccode\u003elocalstorage\u003c/code\u003e 中存储了深色模式变量，那怎么去恢复深色模式呢，\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e在 \u003ccode\u003ecomponents/ThemeToggle.vue\u003c/code\u003e 的 \u003ccode\u003eonMounted\u003c/code\u003e 里获取 \u003ccode\u003elocalstorage\u003c/code\u003e 做判断，如果是深色模式，那就做一下处理，在组件里新增下面这段代码：\u003c/li\u003e\n\u003c/ul\u003e\n\u003cpre\u003e\u003ccode\u003eonMounted(() =\u003e {\n  if (localStorage.getItem(\"theme\") === \"dark\") {\n    dark.value = true;\n    document.documentElement.classList.add(\"dark\");\n  }\n});\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003e然后我们再去测试一下，深色模式下刷新网站，效果如图\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/42ec555012444f109344066fedce4826~tplv-k3u1fbpfcp-watermark.image?\" alt=\"n2.gif\"\u003e\u003c/p\u003e\n\u003cp\u003e的确是持久化了深色模式，但是发现刷新网站的时候会闪一下，这是为什么呢？\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e这是因为 nuxt 框架生成的 js 代码插入到了 DOM 文档的尾部，造成 js 执行晚了一步，所以获取 \u003ccode\u003elocalstorage\u003c/code\u003e 就延迟了一点点，造成设置深色模式的时候会闪一下\u003c/li\u003e\n\u003c/ul\u003e\n\u003cp\u003e怎么解决呢？\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e那就把获取 \u003ccode\u003elocalstorage\u003c/code\u003e 的代码插入到 DOM 文档头部不就行了，而且如果没有设置 defer 或 async 属性， js 加载还会造成浏览器将阻塞渲染，更加的能防止闪烁出现\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch3\u003e解决闪烁问题\u003c/h3\u003e\n\u003cul\u003e\n\u003cli\u003e\n\u003cp\u003e\u003ccode\u003eNuxt\u003c/code\u003e 提供了在 DOM 文档头部插入代码的方法，请阅读 \u003ca href=\"https://nuxt.com/docs/api/configuration/nuxt-config#head\"\u003eNuxt Configuration Reference\u003c/a\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e新建脚本文件 \u003ccode\u003epublic/script.js\u003c/code\u003e，代码如下（这段代码来源是 \u003ca href=\"https://tailwindcss.com/docs/dark-mode#supporting-system-preference-and-manual-selection\"\u003etailwindcss\u003c/a\u003e）：\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n\u003cpre\u003e\u003ccode\u003eif (\n  localStorage.getItem(\"theme\") === \"dark\" ||\n  (!localStorage.getItem(\"theme\") \u0026#x26;\u0026#x26;\n    window.matchMedia(\"(prefers-color-scheme: dark)\").matches)\n) {\n  document.documentElement.classList.add(\"dark\");\n} else {\n  document.documentElement.classList.remove(\"dark\");\n}\n\n\u003c/code\u003e\u003c/pre\u003e\n\u003cul\u003e\n\u003cli\u003e然后在 \u003ccode\u003enuxt.config.js\u003c/code\u003e 增加配置：\u003c/li\u003e\n\u003c/ul\u003e\n\u003cpre\u003e\u003ccode\u003e// https://nuxt.com/docs/api/configuration/nuxt-config\nexport default defineNuxtConfig({\n  app: {\n    head: {\n      script: [\"/script.js\"],\n    },\n  },\n  css: [\"~/assets/css/main.css\"],\n  postcss: {\n    plugins: {\n      tailwindcss: {},\n      autoprefixer: {},\n    },\n  },\n  devServer: {\n    port: 5005,\n  },\n});\n\u003c/code\u003e\u003c/pre\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003ecomponents/ThemeToggle.vue\u003c/code\u003e 的 \u003ccode\u003eonMounted\u003c/code\u003e 还是需要的，需要保持变量也同步，改一下\u003c/li\u003e\n\u003c/ul\u003e\n\u003cpre\u003e\u003ccode\u003eonMounted(() =\u003e {\n  if (localStorage.getItem(\"theme\") === \"dark\") {\n    dark.value = true;\n  }\n});\n\u003c/code\u003e\u003c/pre\u003e\n\u003cul\u003e\n\u003cli\u003e这里还有一个小问题，就是图标也会跟着闪烁的，原因还是js执行顺序的问题，我的解决办法是改为使用 \u003ccode\u003ecss class\u003c/code\u003e 来控制图标的显隐，修改 \u003ccode\u003ecomponents/ThemeToggle.vue\u003c/code\u003e 代码如下：\u003c/li\u003e\n\u003c/ul\u003e\n\u003cpre\u003e\u003ccode\u003e- \u0026#x3C;span v-show=\"!dark\"\u003e\n+ \u0026#x3C;span class=\"block dark:hidden\"\u003e\n\n- \u0026#x3C;span v-show=\"dark\"\u003e\n+ \u0026#x3C;span class=\"hidden dark:block\"\u003e\n\u003c/code\u003e\u003c/pre\u003e\n\u003cp\u003eok，现在我们再来在深色模式下刷新网页，么得问题，达到了想要的效果。\u003c/p\u003e\n\u003cp\u003e因为在正常效果下录制 GIF 的话，刷新也看不出来，所以这里就不放效果图了，最后的代码在上面我提到的 \u003ca href=\"https://github.com/yxb94616/nuxt-theme-demo\"\u003egithub 仓库\u003c/a\u003e。\u003c/p\u003e\n\u003cblockquote\u003e\n\u003cp\u003e如有错误，欢迎指正\u003c/p\u003e\n\u003c/blockquote\u003e\n","title":"Nuxt3+Tailwindcss implements dark mode switching","date":"2023-05-24"}},"__N_SSG":true},"page":"/posts/[id]","query":{"id":"nuxt3-tailwindcss-dark"},"buildId":"2JG6mlIUNmPBlo9NKBYU6","isFallback":false,"gsp":true,"scriptLoader":[]}</script></body></html>
